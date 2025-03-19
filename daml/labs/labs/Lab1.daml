@@ -1,0 +1,30 @@
+module Lab1 where
+import Daml.Script
+
+--Write a function named quadFunction that takes three integers for xyz and returns the value of 3x^2 2y z
+--Write a test script that tests quadFunction as quadFunction 1 2 3
+--Then, write it as a lambda function
+
+quadFunction : Int -> Int -> Int -> Int
+quadFunction x y z = (3*x^2) + (2 * y) + z 
+
+--Write a function named doubleMe that takes an integer and returns its double. 
+--Using the doubleMe function, write another function called doubleUs that takes two integers, doubles each of them, adds them up and returns the result.
+--Write an expression in the test script using doubleUs with an inFix notation to get the same result as doubleUs 3 4.
+
+doubleMe : Int-> Int
+doubleMe a = 2*a
+
+doubleUs: Int -> Int -> Int
+doubleUs b c = doubleMe b + doubleMe c 
+
+
+testFunctions : Script()
+testFunctions = script do
+    debug $ quadFunction 1 2 3
+    debug $ doubleMe 3
+    debug $ doubleUs 3 4
+    debug $ 3 `doubleUs` 4
+
+
+

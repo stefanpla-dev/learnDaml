@@ -1,0 +1,24 @@
+module Functions where
+import Daml.Script
+
+increment : Int -> Int
+--last data type of the signature is the expected result. everything before is arguments. this function maps an int value to another int value
+increment n = n + 1
+
+add: Int -> Int -> Int
+add x y = x + y
+
+multiply: Int -> Int -> Int
+multiply a b = a * b
+
+divide: Int -> Int -> Int
+divide c d = c / d
+
+testFunctions: Script () -- empty parens indicate function returns nothing. testing ideally written in a different module.
+testFunctions = script do
+    debug $ increment 3
+    debug (increment 4)
+    debug $ add 5 6
+    debug $ multiply 9 8 
+    debug (divide 30 6)
+    --debug produces a value to script results. $ encloses what needs to be printed.

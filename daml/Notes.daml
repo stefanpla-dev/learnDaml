@@ -1,0 +1,12 @@
+module Notes where
+
+--Left/Right Associativity
+    --Associativity is a property of binary operations or functions and describes how a function is parsed. Rearranging order of experssions doesn't change the results. Functions can be left associative or right associative. Subtraction/division are right associative, and multiplication/addition are left associative.
+
+--Currying
+    -- Concerting a function with multiple arguments to a function that takes a single argument and returns another function.
+    --ALL FUNCTIONS IN DAML CAN BE VIEWED AS TAKING ONE ARGUMENT AND RETURNING A FUNCTION THAT TAKES THE REST OF THE ARGUMENTS
+
+--Lambda Functions
+    -- Use inline notation, don't have a name, and are only used once in the place where they are written. 
+    -- (\n -> n+1). Always in parens, always backslash before the arguments.
