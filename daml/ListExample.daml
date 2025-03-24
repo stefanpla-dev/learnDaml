@@ -1,0 +1,29 @@
+module ListExample where
+
+import Daml.Script
+import DA.List 
+
+listTest : Script ()
+listTest = script do
+    let 
+        intList = [1,2,3,4]
+        fruitList = ["orange", "apple", "banana"]
+
+        rangeList = [10 .. 30] -- .. is range notation, so rangeList includes every number between 10 and 30.
+        evenList = [2,4 .. 20] -- daml will just get the pattern, if there is one, if you get it started
+
+        veggieList = ["spinach", "broccoli", "lettuce"]
+
+        foodList = fruitList <> veggieList -- can use angle brackets to concatenate two lists, or the ++
+    
+    debug $ "Head: " <> show (head fruitList) -- first element
+    debug $ "Tail: " <> show (tail fruitList) -- everything after first
+    debug $ "Last: " <> show (last fruitList) -- last element
+    debug $ "Sort: " <> show (sort fruitList) -- alphabetizes. int lists are sorted numerically
+    debug $ "Init: " <> show (init fruitList) -- everything besides the first element
+    debug $ "Reverse: " <> show (reverse fruitList) -- opposite of sort
+    debug $ "Take: " <> show (take 2 fruitList) -- starts with first element and returns the number specified after take keyword
+    debug $ "Elem: " <> show (elem "apple" fruitList) -- returns true or false if the specified element exists in the list.
+    debug $ "Sum: " <> show (sum intList) -- sums a list
+    debug $ "Product: " <> show (product intList) -- multiplies all elements together
+    debug $ "Prepend: " <> show ("mango" :: fruitList) -- adds mango to the beginning of fruitList. :: is the notation

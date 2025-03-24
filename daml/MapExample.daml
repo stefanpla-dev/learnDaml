@@ -1,0 +1,24 @@
+module MapExample where
+
+import Daml.Script
+import DA.Map as Map 
+
+mapTest : Script ()
+mapTest = script do
+
+    let 
+        wordMap : Map Int Text -- structure that has a collection of key and value pairs. key is used to look up the pair and find the value associated with that key.
+        wordMap = Map.empty
+    let 
+        words = [(1, "apple"), (2, "banana")]
+        wordMap = Map.fromList words
+    debug $ show wordMap
+    debug $ Map.size wordMap
+    debug $ Map.lookup 1 wordMap
+    debug $ Map.lookup 3 wordMap
+    let
+        newWordMap = Map.insert 3 "cherry" wordMap
+    debug $ Map.size newWordMap
+    debug $ Map.lookup 3 newWordMap
+
+    

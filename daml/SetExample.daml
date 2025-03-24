@@ -1,0 +1,24 @@
+module SetExample where
+
+import Daml.Script
+import DA.Set as Set 
+
+setTest : Script ()
+setTest = script do
+    let
+        fruitSet : Set Text -- this is a set with text elements.
+        fruitSet = Set.empty -- creates an empty set. binds to fruitSet
+
+    let fruitList = ["apple", "banana", "cherry", "apple"]
+    let fruitSet = Set.fromList fruitList -- creates a set based on the list above
+
+    debug $ Set.size fruitSet -- prints 3 since sets can only contain unique elements
+    debug $ show fruitSet
+    debug $ Set.member "mango" fruitSet -- returns false since mango is not in the fruitSet
+    debug "----------------------------"
+
+    let newFruitSet = Set.insert "mango" fruitSet -- need to declare a new variable since variables in daml are immutable.
+
+    debug $ Set.size newFruitSet
+    debug $ show newFruitSet
+    debug $ Set.member "mango" fruitSet

@@ -1,0 +1,18 @@
+module TupleExample where
+
+import Daml.Script
+import DA.Tuple
+
+tupleTest : Script ()
+tupleTest = script do
+
+    let
+        twoTuple = ("abc", 123) -- tuples can contain elements of different data types
+        threeTuple = ("a", 456, True)
+        nTuple = (1, "hello", False, [7,8,9])
+
+    debug $ fst twoTuple
+    debug $ snd twoTuple
+
+    debug $ fst3 threeTuple
+    debug $ snd3 threeTuple -- 3 notation because the tuple has three elements. comes from DA.Tuple library
