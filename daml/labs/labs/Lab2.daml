@@ -1,0 +1,68 @@
+module Lab2 where 
+
+import Daml.Script
+import DA.Map as Map hiding (filter)
+import DA.List (head, last)
+import DA.Text (words)
+
+
+termFrequency : Text -> Text -> Decimal 
+termFrequency word text = 
+    let matches = filter (==word) (words text)
+    in intToDecimal (length matches) / intToDecimal (length (words text))
+    
+lab2Test : Script ()
+lab2Test = script do
+    let
+        song = [("do", "a deer, a female deer"), ("re", "a drop of golden sun"), ("mi", "a name, I call myself"), ("fa", "a long long way to run")]
+
+        first = head song 
+        first1 = fst first
+
+        two = take 2 song 
+        second = last two
+        second1 = fst second
+
+        three = take 3 song 
+        third = last three 
+        third1 = fst third
+
+        four = last song 
+        fourth1 = fst four
+
+        notes = [first1, second1, third1, fourth1]
+
+        ---------------------------------------
+
+        erst = snd first
+
+        zweit = snd second
+
+        drit = snd third
+
+        viert = snd four 
+
+        meanings = [erst, zweit, drit, viert]
+
+        ---------------------------------------
+
+        notesMap : Map Text Text
+        notesMap = Map.empty
+        notesMap = Map.fromList song 
+
+
+
+    debug $ notes
+    debug $ meanings
+    debug $ reverse notes
+    debug $ reverse meanings
+
+    debug $ Map.lookup "do" notesMap
+    debug $ Map.lookup "re" notesMap
+    debug $ Map.lookup "mi" notesMap
+    debug $ Map.lookup "fa" notesMap
+
+    debug $ termFrequency "long" "a long long way to run"
+
+    pure ()
+
