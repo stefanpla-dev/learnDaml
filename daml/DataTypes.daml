@@ -1,0 +1,41 @@
+module DataTypes where
+
+import Daml.Script
+import DA.Time
+import DA.Date
+
+datatype_test: Script ()
+
+datatype_test = script do
+    now <- getTime
+
+    debug $ "Time: " <> show now -- angle brackets are string concatenator operator. keywork show is a funtion that takes a value or a certain data type and turns it into readable text. like tostring in python.
+
+    let
+        amount : Decimal 
+        amount = 10.12345
+
+        dateOfBirth : Date 
+        dateOfBirth = date 2000 Jan 02
+
+        timeOfBirth : Time
+        timeOfBirth = time dateOfBirth 15 30 10
+
+        today : Date
+        today = date 2025 Mar 24
+
+        now2 : Time
+        now2 = time today 10 30 0
+    
+    setTime now2
+    debug $ "Now2: " <> show now2
+
+    let
+        age2 : RelTime 
+        age2 = subTime now2 timeOfBirth -- will return the difference in microseconds
+
+    debug $ "Age 2 " <> show age2
+
+
+    debug $ amount
+    return ()
