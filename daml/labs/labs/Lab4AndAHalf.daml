@@ -1,0 +1,27 @@
+module Lab4AndAHalf where
+
+import Daml.Script
+import DA.Math
+
+triangleArea: [Decimal] -> Either Text Decimal 
+triangleArea sides = 
+    if length sides /= 3 then
+        Left "Error: Triangle has 3 sides"
+    else 
+        let [x,y,z] = sides
+        in if x == 0.0 || y == 0.0 || z == 0.0 then
+            Left "Error: Side of a triangle cannot be 0.0"
+        else if x+y < z || x+z < y || y+z < x then
+            Left "Error: This can't be a triangle as sum of any two sides must be greater than the third"
+        else 
+            let s = (x+y+z) / 2.0
+            in Right (sqrt(s*(s-x)*(s-y)*(s-z)))
+
+lab4AndAHalfTest : Script ()
+lab4AndAHalfTest = script do
+    debug $ triangleArea [4.0, 2.0, 5.0]
+    debug $ triangleArea [1.0, 2.0, 3.0]
+    debug $ triangleArea [1.0, 2.0]
+    debug $ triangleArea [1.0, 2.0, 0.0]
+
+    return ()
