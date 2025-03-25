@@ -1,0 +1,43 @@
+module ControlFlowExample where
+
+import Daml.Script
+
+ifOddOrEven: Int -> Text
+ifOddOrEven x = 
+    if (x%2 == 0) then "even"
+    else "odd"
+
+-- can make code more readable if there are a lot of if conditions to check. see pipe symbols / otherwise notation below.
+
+findBMI: Decimal -> Decimal -> Text
+findBMI height weight
+    | weight / (height^2) <= 18.5 = "underweight"
+    | weight / (height^2) <= 25.0 = "normal"
+    | weight / (height^2) <= 30.0 = "overweight"
+    | otherwise = "obese"
+
+    -- or -- 
+    -- | bmi <= 18.5 = "underweight"
+    -- | bmi <= 25.0 = "normal"
+    -- | bmi <= 30.0 = "overweight"
+    -- | otherwise = "obese"
+    -- where bmi = weight / (height^2)
+
+-- Case Statement
+caseOddOrEven: Int -> Text --uses pattern matching to compute a value. underscore is a catchall
+caseOddOrEven x = case(x%2) of 
+    0 -> "even"
+    1 -> "odd"
+    _ -> "unknown"
+
+-- Either Example
+someFunction: Int -> Either Text Int -- Left constructor returns text, right constructor returns Int
+someFunction x = 
+    if (x<0) then 
+        Left "Error"
+    else Right (x+2)
+
+
+testOddOrEven: Script ()
+testOddOrEven = script do 
+    debug $ ifOddOrEven 5
