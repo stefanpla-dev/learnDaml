@@ -1,0 +1,44 @@
+module TypeClassExample where
+
+import Daml.Script
+import DA.Text (sha256)
+
+class Encryptable i o -- keyword, input and output
+    where
+        encrypt: i -> o -- encrypt is the function which takes an input i and returns o
+
+data PersonalRecord = PersonalRecord 
+    with
+        name : Text
+        id : Int
+    deriving (Eq, Show) -- show lets us print with a debug statement, eq lets us compare these fields to others
+
+instance Encryptable PersonalRecord Text -- define the data type PersonalRecord by making it an instance of the Encryptable class. Text is the return type of the function encrypt.
+    where
+        encrypt myRecord = sha256 (myRecord.name <> show(myRecord.id))
+        --function concatenates the name and id in myRecord and passes that string to the sha256 function to encrypt it
+
+testTypeclass : Script ()
+testTypeclass = script do 
+    let
+        someData = PersonalRecord 
+            with
+                name = "Alice"
+                id = 30
+        someOtherData = PersonalRecord 
+            with
+                name = "Bob"
+                id = 31
+    
+    debug $ someData == someOtherData
+
+testEncryption: Script ()
+testEncryption = script do
+    let
+        someData = PersonalRecord
+            with
+                name = "Stefan"
+                id = 490
+        
+        encryptedData: Text = encrypt someData -- shorthand of defining a variables type and binding it to its value in one line
+    debug (encryptedData)
