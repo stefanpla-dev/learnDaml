@@ -1,0 +1,82 @@
+module Lab6 where
+
+import Daml.Script
+
+-- Define a data type named Account that has two fields: ownerId of type Text and balance of type Decimal
+data Account = Account 
+    with 
+        ownerId : Text
+        balance : Decimal 
+
+-- Define a typeclass named SafeAccount that has a function safeQuery that takes an account and a Text for id. 
+class SafeAccount account  
+    where
+        safeQuery : account -> Text -> Optional Decimal
+
+
+-- if the id matches with the one in the account, then it returns the balance amount. Otherwise it returns None.
+instance SafeAccount Account 
+    where 
+        safeQuery (Account id balance) queryId = 
+            if id == queryId then 
+                Some balance
+            else 
+                None
+
+----------------------------------
+
+-- Create a data type called AirTravelPoint that has just one field named count of type Int. Create another called DiningPoint with just one field named count of type Int.
+
+data AirTravelPoint = AirTravelPoint 
+    with
+        count : Int
+
+data DiningPoint = DiningPoint
+    with
+        count : Int
+
+-- Create a type-class named Redeemable with a function redeem.
+
+class Redeemable points
+    where redeem : points -> Decimal
+
+-- make AirTravelPoint and DiningPoint instances of Redeemable, making their redeem functions return a Decimal value based on the formula airtravelpoints * 10, diningpoints *5.
+
+instance Redeemable AirTravelPoint  
+    where
+        redeem (AirTravelPoint count) = 
+            intToDecimal(count) * 10.0
+
+instance Redeemable DiningPoint 
+    where
+        redeem (DiningPoint count) = 
+            intToDecimal(count) * 5.0
+
+
+lab6Test : Script ()
+lab6Test = script do
+
+    let myAccount = Account with
+            ownerId = "123"
+            balance = 100.0
+        myBalance1 : Optional Decimal = safeQuery myAccount "123"
+
+    debug $ myBalance1
+
+    let myBalance2: Optional Decimal = safeQuery myAccount "234"
+    debug $ myBalance2
+
+    -------------------------------
+
+    let myTravelPoints = AirTravelPoint with
+            count = 500
+
+        myDiningPoints = DiningPoint with
+            count = 500
+
+        myTotalRedeemedPoints : Decimal = redeem myTravelPoints + redeem myDiningPoints
+    
+    debug $ myTotalRedeemedPoints
+
+
+    pure()
