@@ -1,0 +1,40 @@
+module Lab5 where
+
+import Daml.Script
+import DA.Text (words)
+
+song : [(Text, Text)]
+song = [("do", "a deer, a female deer"), ("re", "a drop of golden sun"), ("mi", "a name, I call myself"), ("fa", "a long long way to run")]
+
+firsts : [Text]
+-- firsts = map (\(x,_) -> x) song
+firsts = map (fst) song
+
+seconds : [Text]
+seconds = map (snd) song
+
+-----------------------------------------
+
+termFrequency : Text -> Text -> Decimal 
+termFrequency word text = 
+    let matches = filter (==word) (words text)
+    in intToDecimal (length matches) / intToDecimal (length (words text))
+
+multiTermFrequency : Text -> [Text] -> [Decimal]
+multiTermFrequency x y = map (termFrequency x) y
+
+-- Write the same function as above using foldr instead of map.
+
+
+lab5Test : Script ()
+lab5Test = script do
+    debug $ firsts
+    debug $ seconds
+
+    let x = "hello"
+    let y = [ "hello from the other side I must have called a thousand times", 
+            "You say goodbye and I say hello hello hello",
+            "hello is it me you’re looking for",
+            "hello hello is anyone home"
+            ]
+    debug $ multiTermFrequency x y
