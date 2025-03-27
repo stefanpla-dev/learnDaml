@@ -1,0 +1,32 @@
+module TypeConstraintExample where
+
+import Daml.Script
+
+hello: Show a => a -> Text 
+-- type of a is left somewhat ambiguous in the function declaration - this will work so long as a is a member of the Show typeclass (which is to say, it can be printed. Remember that show is akin to tostring() in python.)
+hello a = "Hello " <> show a 
+
+-- data Optional a 
+--     = None
+--     | Some a 
+--         deriving (Eq, Show)
+--A value of type Optional a either contains a value of type a (represented as Some a) or it is empty (represented as None). 
+
+--useful illustration of Optional Typeclass below:
+
+unsafeDiv: Int -> Int -> Int
+unsafeDiv x y = x/y -- what if y is zero?
+
+safeDiv: Int -> Int -> Optional Int
+safeDiv _ 0 = None
+safeDiv x y = Some (x/y)
+
+
+
+testHello : Script ()
+testHello = script do
+
+    -- debug $ unsafeDiv 5 0
+    debug $ safeDiv 5 0
+
+    pure()
