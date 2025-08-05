@@ -26,6 +26,8 @@ multiTermFrequency x y = map (termFrequency x) y
 -- Write the same function as above using foldr instead of map.
 
 
+
+
 lab5Test : Script ()
 lab5Test = script do
     debug $ firsts
