@@ -3,10 +3,14 @@ module HelloWorld where
 import Daml.Script
 
 hello: Text -> Text
-
 hello x = "Hello " <> x
+
+goodbye : Text -> Text
+goodbye x = "Goodbye " <> x 
 
 testHello : Script ()
 testHello = script do
     debug $ hello "Chris"
+
+    debug $ goodbye "Stefan"
 
