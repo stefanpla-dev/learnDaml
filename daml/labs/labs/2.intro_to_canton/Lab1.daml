@@ -7,20 +7,20 @@ import DA.Time (time)
 
 template CLPApplication 
     with
+        customer : Party
+        airline : Party
         name : Text
         address : Text
         email : Text
         phone : Optional Text
         appTimestamp : Time
         dob : Date
-        customer : Party
-        airline : Party
-    where
-        signatory customer 
+    where 
+        signatory customer
         observer airline
 
         choice SubmitApplication : ContractId CLPApplication
-            with 
+            with
                 appCustomer : Party
                 appAirline : Party
                 customerName : Text
@@ -29,37 +29,37 @@ template CLPApplication
                 customerPhone : Optional Text
                 now : Time
                 customerDob : Date
-            controller appCustomer
-            do 
-                create this with 
+            controller customer
+            do
+                create this with
                     name = customerName
                     address = customerAddress
-                    email = customerEmail   
-                    phone = customerPhone   
+                    email = customerEmail
+                    phone = customerPhone
                     appTimestamp = now
                     dob = customerDob
-
+        
         choice AcceptApplication : ContractId CLPAccount
             with
                 points : Int
-                accountTimestamp : Time
+                accountTimestamp : Time 
             controller airline 
             do
-                create CLPAccount with 
+                create CLPAccount with
                     customer = customer
                     airline = airline
                     name = name
                     address = address
-                    email = email 
+                    email = email
                     phone = phone
-                    dob = dob 
+                    dob = dob
                     points = points
                     accountTimestamp = accountTimestamp
-        
+
         choice RejectApplication : Text
             controller airline
-            do
-                return "Application rejected"
+                do
+                    return "Application rejected"
 
 template CLPAccount 
     with
@@ -69,58 +69,23 @@ template CLPAccount
         address : Text
         email : Text
         phone : Optional Text
+        accountTimestamp : Time
         dob : Date
         points : Int
-        accountTimestamp : Time
     where
-        signatory customer, airline
+        signatory customer, airline 
 
 
-
-
-
-testSubmitAndAcceptCLPApplication : Script ()
-testSubmitAndAcceptCLPApplication = script do
+testSubmitAndAcceptCLPApplication: Script () 
+testSubmitAndAcceptCLPApplication = script do 
     alice <- allocateParty "Alice"
-    airline <- allocateParty "Epic Airlines"
-    now <- getTime
-
-    -- Alice creates a blank CLP Application
-    aliceCLPAppId <- submit alice do 
-        createCmd CLPApplication with
-            customer = alice
-            airline = airline
-            name = ""
-            address = ""
-            email = ""
-            phone = Some ""
-            appTimestamp = now
-            dob = toDateUTC now
-
-    -- Alice submits the application with details filled in
-    aliceCLPAppId <- submit alice do 
-        exerciseCmd aliceCLPAppId SubmitApplication with
-            appCustomer = alice 
-            appAirline = airline
-            customerName = "Alice"
-            customerAddress = "123 Main St ABCD"
-            customerEmail = "alice@wonderland.io"
-            customerPhone = Some " 01-555-555-1234"
-            now = time (date 2023 Mar 01) 10 30 0
-            customerDob = date 2000 Jan 05   
-    
-    return ()
-
-testSubmitAndRejectApplication: Script ()
-testSubmitAndRejectApplication = script do 
-    bob <- allocateParty "Bob"
     airline <- allocateParty "Epic Airlines"
     now <- getTime 
 
-    -- Bob creates a blank CLPApplication
-    bobCLPAppId <- submit bob do         
+    -- Alice creates a blank CLPApplication
+    aliceCLPAppId <- submit alice do         
         createCmd CLPApplication with  
-            customer = bob 
+            customer = alice 
             airline = airline 
             name = ""
             address = ""
@@ -129,24 +94,24 @@ testSubmitAndRejectApplication = script do
             appTimestamp = now 
             dob = toDateUTC now
 
-    -- Bob submits the application with details filled in
-    bobCLPAppId <- submit bob do 
-        exerciseCmd bobCLPAppId SubmitApplication 
+    -- Alice submits the application with details filled in
+    aliceCLPAppId <- submit alice do 
+        exerciseCmd aliceCLPAppId SubmitApplication 
             with
-                appCustomer = bob 
+                appCustomer = alice 
                 appAirline = airline
-                customerName = "Bob"
-                customerAddress = "123 Spring St EFGH"
-                customerEmail = "bob@nomansland.io"
-                customerPhone = Some " 01-555-555-5678"
+                customerName = "Alice"
+                customerAddress = "123 Main St ABCD"
+                customerEmail = "alice@wonderland.io"
+                customerPhone = Some " 01-555-555-1234"
                 now = time (date 2023 Mar 01) 10 30 0
-                customerDob = date 2010 Jan 05   
+                customerDob = date 2000 Jan 05                
 
+    -- Airline accepts the application and creates a CLP account with Alice's data
+    aliceCLPAccount <- submit airline do 
+        exerciseCmd aliceCLPAppId AcceptApplication 
+            with 
+                points = 0
+                accountTimestamp = now
 
-    -- airline rejects the application and returns a message
-    applicationResult <- submit airline do 
-        exerciseCmd bobCLPAppId RejectApplication 
-    
-    debug applicationResult
-    
     return ()

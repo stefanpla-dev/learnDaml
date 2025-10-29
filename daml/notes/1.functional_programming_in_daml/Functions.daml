@@ -14,6 +14,11 @@ multiply a b = a * b
 divide: Int -> Int -> Int
 divide c d = c / d
 
+subtract: Int -> Int -> Int 
+subtract e f = e - f 
+
+
+
 testFunctions: Script () -- empty parens indicate function returns nothing. testing ideally written in a different module.
 testFunctions = script do
     debug $ increment 3

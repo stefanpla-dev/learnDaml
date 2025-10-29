@@ -9,7 +9,7 @@ datatype_test: Script ()
 datatype_test = script do
     now <- getTime
 
-    debug $ "Time: " <> show now -- angle brackets are string concatenator operator. keywork show is a funtion that takes a value or a certain data type and turns it into readable text. like tostring in python.
+    debug $ "Time: " <> show now -- angle brackets are string concatenator operator. keyword show is a funtion that takes a value or a certain data type and turns it into readable text. like tostring in python.
 
     let
         amount : Decimal 

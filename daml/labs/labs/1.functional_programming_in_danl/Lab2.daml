@@ -2,67 +2,91 @@ module Lab2 where
 
 import Daml.Script
 import DA.Map as Map hiding (filter)
-import DA.List (head, last)
+import DA.List ((!!), head, last)
 import DA.Text (words)
+import qualified DA.Text as T
 
 
-termFrequency : Text -> Text -> Decimal 
-termFrequency word text = 
-    let matches = filter (==word) (words text)
-    in intToDecimal (length matches) / intToDecimal (length (words text))
-    
+termFrequency : Text -> Text -> Decimal
+termFrequency x y = 
+    let toList = words y
+        hits = filter (== x) toList
+        total = length toList
+        count = length hits 
+    in
+        intToDecimal count / intToDecimal total
+        
+
+collectStartsWith : Text -> Text -> [Text]
+collectStartsWith x y = 
+    let toList = words y 
+        hits = filter (\word -> T.take (T.length x) word == x) toList
+    in hits
+
+countContaining : Text -> Text -> Int
+countContaining x y = 
+    let toWords = words y
+        count = filter (\word -> T.take (T.length x) word == x) toWords
+    in length count
+
+replaceWord : Text -> Text -> Text -> Text 
+replaceWord x y z = 
+    let toWords = words z 
+        swap = map (\w -> if w == x then y else w) toWords
+    in T.unwords swap
+
+countPalindromes : Text -> Int
+countPalindromes x = 
+    let toWords = words x 
+        reversed = filter (\word -> T.reverse word == word) toWords
+    in length reversed
+
+
 lab2Test : Script ()
 lab2Test = script do
-    let
+
+    let 
         song = [("do", "a deer, a female deer"), ("re", "a drop of golden sun"), ("mi", "a name, I call myself"), ("fa", "a long long way to run")]
 
         first = head song 
-        first1 = fst first
+        first1 = fst first 
+        first2 = snd first
 
-        two = take 2 song 
-        second = last two
+        second = song !! 1 
         second1 = fst second
+        second2 = snd second
 
-        three = take 3 song 
-        third = last three 
+        -- double !! returns the element in the position after the !! for the list before the !!
+
+        third = song !! 2
         third1 = fst third
+        third2 = snd third
 
-        four = last song 
-        fourth1 = fst four
+        fourth = last song
+        fourth1 = fst fourth
+        fourth2 = snd fourth
 
         notes = [first1, second1, third1, fourth1]
+        notes2 = [first2, second2, third2, fourth2]
 
-        ---------------------------------------
-
-        erst = snd first
-
-        zweit = snd second
-
-        drit = snd third
-
-        viert = snd four 
-
-        meanings = [erst, zweit, drit, viert]
-
-        ---------------------------------------
-
-        notesMap : Map Text Text
-        notesMap = Map.empty
-        notesMap = Map.fromList song 
-
-
+        songMap: Map Text Text
+        songMap = Map.fromList song
 
     debug $ notes
-    debug $ meanings
+    debug $ notes2
     debug $ reverse notes
-    debug $ reverse meanings
+    debug $ reverse notes2
 
-    debug $ Map.lookup "do" notesMap
-    debug $ Map.lookup "re" notesMap
-    debug $ Map.lookup "mi" notesMap
-    debug $ Map.lookup "fa" notesMap
+    debug $ Map.lookup "do" songMap
+    debug $ Map.lookup "re" songMap
 
     debug $ termFrequency "long" "a long long way to run"
+
+    debug $ countContaining "lo" "lovely lovely little lollipop"
+
+    debug $ replaceWord "long" "short" "a long long long way to run"
+
+    debug $ countPalindromes "the madam drove the racecar to another level"
 
     pure ()
 
