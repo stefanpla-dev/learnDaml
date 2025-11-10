@@ -1,20 +1,65 @@
 module Lab3 where
 
 import Daml.Script
+import DA.List (maximumBy)
 
-class Reachable i o 
+data Person = Person with  
+    name : Text
+    email : Text
+        deriving (Eq, Show, Ord)
+
+data ToDo = ToDo with
+    title : Text
+    completed : Bool
+        deriving (Eq, Show)
+
+data Task = Task with
+    title : Text
+    urgency : Int
+
+data SupportTicket = SupportTicket with
+    customer : Text
+    severity : Int 
+
+-- Anything Reachable must implement reachOut
+class Reachable x where
+    reachOut : x -> Text
+
+-- Person instance delivers the actual behavior
+instance Reachable Person where
+    reachOut Person{ name, email} = 
+        "Hello " <> name <> " at " <> email
+
+class Summarizable s where 
+    summary : s -> Text
+
+instance Summarizable Person where
+    summary Person{ name, email} = 
+        name <> ", " <> email
+
+instance Summarizable ToDo where
+    summary ToDo { title, completed} = 
+        if completed then "✓ " <> title else "X " <> title
+
+class HasPriority a where
+    priority : a -> Int
+
+instance HasPriority Task where
+    priority Task{ title, urgency } = 
+        urgency
+
+
+instance HasPriority SupportTicket where
+    priority SupportTicket { customer, severity } = 
+        severity * 10
+
+highestPriority : HasPriority a => [a] -> Optional a 
+highestPriority [] = None
+highestPriority xs = Some $ maximumBy comparePriority xs 
     where
-        reachOut: i -> o
+        comparePriority x y = compare (priority x) (priority y)
 
-data Person = Person 
-    with
-        name : Text
-        email : Text
-    deriving (Eq, Show, Ord)
 
-instance Reachable Person Text
-    where 
-        reachOut someone = "Hello " <> someone.name <> " at " <> someone.email 
 
 testPerson : Script ()
 testPerson = script do
@@ -22,21 +67,32 @@ testPerson = script do
         person1 = Person with
             name = "Alice"
             email = "alice@earth.com"
-        
+
         person2 = Person with
             name = "Bob"
             email = "bob@earth.com"
-    
+        
     debug person1
     debug $ person1 == person2
     debug $ person1 < person2
-    return ()
 
-testReachable : Script ()
-testReachable = script do
-    let
+    let 
         myFriend = Person with
             name = "Alice"
             email = "alice@earth.com"
         message: Text = reachOut myFriend
+        s: Text = summary myFriend
     debug $ message
+    debug $ s
+
+    let 
+        myTask = ToDo with
+            title = "Clean room"
+            completed = False
+
+        indication: Text = summary myTask
+    debug $ indication
+
+    
+
+    pure ()

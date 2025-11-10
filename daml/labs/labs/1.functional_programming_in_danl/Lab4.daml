@@ -1,44 +1,96 @@
 module Lab4 where
 
 import Daml.Script
+import DA.List (sort)
+import DA.Math (sqrt)
 
-getLetterGradeUsingIf: Decimal -> Text
+-- only with the if else if then statement is there an equal sign after the variable x 
+getLetterGradeUsingIf : Decimal -> Text
 getLetterGradeUsingIf x = 
     if x >= 90.0 then "A"
     else if x >= 80.0 then "B"
     else if x >= 70.0 then "C"
-    else "F" 
+    else "F"
 
-getScoreUsingCase: Text -> Text
-getScoreUsingCase x = case "x" of 
-    "A" -> "90.0+"
+getScoreUsingCase : Text -> Text
+getScoreUsingCase x = case x of
+    "A" -> "90.0 - 100.0"
     "B" -> "80.0 - 89.9"
     "C" -> "70.0 - 79.9"
     "F" -> "Less than 70.0"
-    _ -> "X" 
+    _ -> "unknown"
+
 
 getLetterGradeUsingGuards : Decimal -> Text
-getLetterGradeUsingGuards grade
-    | grade >= 90.0 = "A"
-    | grade >= 80.0 = "B"
-    | grade >= 70.0 = "C"
+getLetterGradeUsingGuards x 
+    | x >= 90.0 = "A"
+    | x >= 80.0 = "B"
+    | x >= 70.0 = "C"
     | otherwise = "F"
 
-getAverageGradeLetter: Decimal -> Decimal -> Text
-getAverageGradeLetter x y  
+getAverageGradeLetter : Decimal -> Decimal -> Text
+getAverageGradeLetter x y 
     | average >= 90.0 = "A"
     | average >= 80.0 = "B"
     | average >= 70.0 = "C"
     | otherwise = "F"
     where average = (x+y) / 2.0
 
+
+shipClassification : Decimal -> Decimal -> Text
+shipClassification x y 
+    | x >= 200.0 && y >= 25.0 = "cruiser"
+    | x >= 200.0 && y < 25.0 = "freighter"
+    | x > 200.0 && y >= 30.0 = "patrol"
+    | otherwise = "skiff"
+
+
+triangleArea : [Decimal] -> Either Text Decimal
+triangleArea sides = 
+    case sides of 
+        [a,b,c] ->
+            let [x,y,z] = sort [a,b,c]
+            in if 0.0 `elem` [x,y,z] then 
+                Left "Error: Side of a triangle cannont be 0.0"
+            else if x+y < z then 
+                Left "Error: This can't be a triangle as sum of any two sides must be greater than the third."
+            else 
+                let s = (x+y+z) / 2.0
+                    area = sqrt (s*(s-x)*(s-y)*(s-z))
+                in Right area 
+        _ ->
+            Left "Error: Triangle has 3 sides"
+
+loanAssessment : [Decimal] -> Either Text Decimal
+loanAssessment inputs = 
+    case inputs of 
+        [amount, income, credit] ->
+            if any (< 0.0) inputs then
+                Left "Error: Inputs must be positive."
+            else if income*5.0 <= amount then 
+                Left "Error: Amount exceeds income multiple."
+            else if credit < 600.0 then 
+                Left "Error: Credit score too low."
+            else 
+                let r = 0.05 / 12.0
+                    n = 60
+                    payment = amount*r/(1-(1+r)^(-n))
+                in Right payment
+
+        _ ->
+            Left "Error: requires amount, income, and credit." 
+    
+
+
 lab4Test : Script ()
 lab4Test = script do
+
+
     debug $ getLetterGradeUsingIf 90.0
     debug $ getLetterGradeUsingIf 85.0
     debug $ getLetterGradeUsingIf 75.0
     debug $ getLetterGradeUsingIf 65.00
-    debug "--------"
+    debug "----------"
     debug $ getScoreUsingCase "A"
     debug $ getScoreUsingCase "B"
     debug $ getScoreUsingCase "C"
@@ -49,8 +101,12 @@ lab4Test = script do
     debug $ getLetterGradeUsingGuards 80.0
     debug $ getLetterGradeUsingGuards 70.0
     debug $ getLetterGradeUsingGuards 60.0
-    debug "--------"
+    debug "----------"
     debug $ getAverageGradeLetter 75.0 83.0
     debug $ getAverageGradeLetter 95.0 83.0
     debug $ getAverageGradeLetter 98.0 83.0
     debug $ getAverageGradeLetter 60.0 70.0
+
+    debug $ shipClassification 202.0 24.0
+
+    return()
