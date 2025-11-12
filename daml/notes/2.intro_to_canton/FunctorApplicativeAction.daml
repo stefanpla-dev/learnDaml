@@ -1,0 +1,67 @@
+module FunctorApplicativeAction where
+
+import Daml.Script
+
+-- Pure expressions =/ Actions
+
+-- Can write a pure expression with no side effects - they neither read nor modify any external state. Add two numbers, sort a list, that sort of thing.
+
+-- The same action (update to ledger) can have different outcomes depending on when it is executed. Think of code inside of do blocks, use of <- annotation, create and exercise commands. 
+
+
+-- Functor Type Class - used for data types that can be mapped over. 
+
+-- class Functor f where
+-- 	fmap: (a->b) -> f a -> f b 
+
+-- instances of a Functor class must implement fmap. 
+-- -takes a function (a maps to b) and a functor a and maps it to a functor with values of type b 
+
+-- fmap (+2) [1,2,3] = (+2) <$> [1,2,3]
+-- prefix = infix 
+
+
+-- Applicative Type Class - takes a functor that contains one more more functions and applies those values to another functor
+
+-- (<*>) : f (a -> b) -> f a -> f b
+
+-- takes a functor with one or more functors in it, and another functor. It then extracts the function from the first functor and maps it over the second. 
+
+
+-- Action Type Class - sequentially composes actions, passing any value produced by the first action as an argument to the next. Represented by the bind operator >>= . Operator pipes the result from one into the next. 
+
+-- class Applicative m => Action m where 
+    -- (>>=) : m a -> (a -> m b) -> m b 
+
+safeDiv : Int -> Int -> Optional Int
+safeDiv _ 0 = None 
+safeDiv x y = Some (x/y)
+
+reduce : Int -> Optional Int 
+reduce x 
+    | x <= 0 = None
+    | otherwise = Some (x-1)
+
+print : Script ()
+print = do
+    let 
+        x = [(*0), (+100), (^2)] <*> [1,2,3]
+        -- above applies functions from first functor, in order that they are written in the first functor, to all values in the second, producing an output functor.
+        y = [(*), (+)] <*> [1,2] <*> [3,4]
+        -- above takes multiply, applies it to 1 and 3, then 1 and 4, appends to returned list. Then applies it to 2 and 3, then 2 and 4, appends it to the returned list. Same pattern for add. Returned list has 8 elements.
+        z = (*) <$> [1,2,3] <*> [1,2,3]
+        -- above miltiplies 1 by 1,2,3, appends to returned list. Then multiples 2 by 1,2,3, appends to list. then multiplies 3 by 1,2,3, appends to returned list. 
+
+        a = safeDiv 4 2 
+        b = safeDiv 4 0 
+        c = safeDiv 4 2 >>= reduce 
+        d = safeDiv 4 0 >>= reduce
+
+    debug x 
+    debug y
+    debug z
+
+    debug a 
+    debug b 
+    debug c 
+    debug d

@@ -20,12 +20,16 @@ termFrequency word text =
     let matches = filter (==word) (words text)
     in intToDecimal (length matches) / intToDecimal (length (words text))
 
-multiTermFrequency : Text -> [Text] -> [Decimal]
-multiTermFrequency x y = map (termFrequency x) y
+-- multiTermFrequency : Text -> [Text] -> [Decimal]
+-- multiTermFrequency x y = map (termFrequency x) y
 
 -- Write the same function as above using foldr instead of map.
 
-
+multiTermFrequency : Text -> [Text] -> [Decimal]
+multiTermFrequency x y = 
+    foldr (termFrequency acc ->
+    
+    )
 
 
 lab5Test : Script ()
